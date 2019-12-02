@@ -48,19 +48,30 @@ namespace ICSharpCode.SharpZipLib.Zip.Compression
 		public const int MIN_MATCH = 3;
 
 		/// <summary>
-		/// Internal compression engine constant
+		/// The window size for the deflate compression in bits. Default is 15 bits (32k). Can be set to 9..15.
 		/// </summary>
-		public const int MAX_WBITS = 15;
+		public static int MAX_WBITS
+		{
+			set
+			{
+				_windowBits = value;
+				WSIZE = (1 << value);
+				WMASK = WSIZE - 1;
+				MAX_DIST = WSIZE - MIN_LOOKAHEAD;
+			}
+			get { return _windowBits; }
+		}
+		static int _windowBits = 15; // Default is 15 Bits
 
 		/// <summary>
 		/// Internal compression engine constant
 		/// </summary>
-		public const int WSIZE = 1 << MAX_WBITS;
+		public static int WSIZE = 1 << MAX_WBITS;
 
 		/// <summary>
 		/// Internal compression engine constant
 		/// </summary>
-		public const int WMASK = WSIZE - 1;
+		public static int WMASK = WSIZE - 1;
 
 		/// <summary>
 		/// Internal compression engine constant
@@ -90,7 +101,7 @@ namespace ICSharpCode.SharpZipLib.Zip.Compression
 		/// <summary>
 		/// Internal compression engine constant
 		/// </summary>
-		public const int MAX_DIST = WSIZE - MIN_LOOKAHEAD;
+		public static int MAX_DIST = WSIZE - MIN_LOOKAHEAD;
 
 		/// <summary>
 		/// Internal compression engine constant
