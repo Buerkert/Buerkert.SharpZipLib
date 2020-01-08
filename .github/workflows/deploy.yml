@@ -1,0 +1,31 @@
+name: deploy
+
+on: [published]
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v1
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 2.2.108
+    - name: Restore with dotnet
+      run: dotnet restore
+    - name: Build with dotnet
+      run: dotnet build src/ICSharpCode.SharpZipLib/ICSharpCode.SharpZipLib.csproj -c Release
+    - name: Run unit tests
+      run: dotnet test test/ICSharpCode.SharpZipLib.Tests/ICSharpCode.SharpZipLib.Tests.csproj
+    - name: Pack nuget package
+      run: dotnet pack -o _dist/ src/ICSharpCode.SharpZipLib/ICSharpCode.SharpZipLib.csproj -c Release
+    - name: Push generated package to GitHub registry
+      run: dotnet nuget push _dist\*.nupkg -s https://nuget.pkg.github.com/Buerkert/index.json
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v1.0.0
+      with:
+        name: SharpZipLib
+        path: src\ICSharpCode.SharpZipLib\bin\Release
